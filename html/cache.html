@@ -113,7 +113,7 @@
     </div>
   <center>
     <div id="container">
-      <div class="CacheMode">This is a cache provided by EtherShare.org with its local light client.<br>We recommend <b>NOT</b> to use this cache because EtherShare should be a decentralized application.<br>Please install MetaMask or Mist to access EtherShare. </div>
+      <div class="CacheMode">This is a cache provided by EtherShare.org with its local web3.js<br>We recommend <b>NOT</b> to use this cache because EtherShare should be a decentralized application.<br>Please install MetaMask or Mist to access EtherShare. </div>
     </div>
 
 
@@ -219,8 +219,8 @@ function readShare(ShareID, ReplyID,  length) {
 }
 
 function startApp(){
-  //web3 = new Web3(new Web3.providers.HttpProvider("Your json-rpc"));
-  eval(function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)d[e(c)]=k[c]||e(c);k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1;};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p;}('4 d="c e g f b 7 8 9 5.6...a h n o..";4 0=p;0-=q;0-=m;0-=2;j=3 1(3 1.l.k("i://5.6:"+0));',27,27,'port|Web3||new|var|ethershare|org|the|api|of|thank|abuse|Please|toyou|kindly|not|do|u|http|web3|HttpProvider|providers|10|so|much|8545|300'.split('|'),0,{}))
+  web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/"));
+  /*eval(function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)d[e(c)]=k[c]||e(c);k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1;};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p;}('4 d="c e g f b 7 8 9 5.6...a h n o..";4 0=p;0-=q;0-=m;0-=2;j=3 1(3 1.l.k("i://5.6:"+0));',27,27,'port|Web3||new|var|ethershare|org|the|api|of|thank|abuse|Please|toyou|kindly|not|do|u|http|web3|HttpProvider|providers|10|so|much|8545|300'.split('|'),0,{}))*/
 
 
   EtherShare = web3.eth.contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}]).at("0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
