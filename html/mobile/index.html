@@ -3,94 +3,51 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <style type="text/css">
     html {
-        background-color: rgb(230, 236, 240);
+        background-color:#ffffff;
         padding-bottom: 50px;
     }
     body {
         margin: 0;
-        font: 15px/1.5 'Microsoft YaHei';
-        line-height: 20px;
-    }
-
-    .oneShare {
-        width:800; margin-top:10px; padding:10px; background-color:#ffffff; text-align:left;
-        box-shadow:0px 0px 3px rgba(51,51,51,0.2);
-    }
-
-    .oneReply {
-        margin-top:5px;
-        border-top: #e2e2e2 1px solid;
-        padding-top: 5px;
+        font: 30px/1.5 'Microsoft YaHei',sans-serif;
+        color:#333333;
+        line-height: 45px;
     }
 
     .nav-outer {
-        margin-bottom:20px;
         background-color:#ffffff;
         box-shadow:0px 0px 5px rgba(51,51,51,0.5);
-        height: 120px;
     }
 
-    .nav {
-      width: 800;
-      margin-left: auto;
-      margin-right: auto;
-      padding: 10px;
+    .logo {
+      /*padding: 20px;
+      padding-left:3%;*/
     }
 
     .button {
-      float:right;
-      width:50px;
-      margin-top:75px;
-      margin-left: 15px;
-      margin-right: 15px; 
-      padding-bottom:25px;
-      font: 18px/0.5 'Microsoft YaHei';
-      color:#949494;
-      text-align: center;
+      display: inline-block;
+      color: #949494;
+      font-size: 50px;
+      margin-right: 19px;
+      margin: 20px;
+      padding: 0;
+      list-style: none;
     }
 
-    .button:hover{
-      border-bottom: #0096ff 2px solid;
-      color:#0096ff;
-    }
-
-    .active{
-      border-bottom: #0096ff 2px solid;
-      color:#0096ff;
-    }
-
-    .submit {
-      font: 15px/0.5 'Microsoft YaHei';
-      width:120px;
-      height: 30px;
+    .oneShare {
+      margin-top:30px;
+      padding-left:3%;
+      padding-right:3%;
+      padding-bottom: 30px;
       background-color:#ffffff;
-      border: #949494 1px solid;
-      color:#949494;
-      margin-right: 10px;
+      text-align:left;
+      border-bottom: #e2e2e2 2px solid;
+      word-wrap: break-word;
     }
 
-    .submit:hover {
-      border: #0096ff 1px solid;
-      color:#0096ff;
-      cursor:pointer;
-    }
-
-    .replyForm {
-    	border-top: #e2e2e2 1px solid;
-        width:800; margin-top:5px; padding-top:10px;padding-bottom:5px;
-    }
-
-    .oneLine {
-      height:25px;
-    }
-
-    .shareInput {
-      width:100%; background:#f2f2f2;  border: none;
-      padding:2px;
-    }
-
-    .shareCheck {
-      width:12px;height:12px; margin-left:0px; margin:top:5px; margin-bottom:0px; background:#f2f2f2;  border: none;
+    .oneReply {
+        margin-top:10px;
+        border-top:  #e2e2e2 2px solid;
+        padding-top: 10px;
     }
 
     .action{
@@ -100,111 +57,49 @@
       text-decoration: underline
     }
 
-    .action:hover{
-      color:#0096ff;
-      cursor:pointer;
-    }
-
   </style>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
 </head>
 <html>
   
     <div class="nav-outer">
-      <div class="nav">
-        <img src="logo2.png" height="100px" />
-        <a href="./about.html"><div class="button" id="About"> About </div></a>
-        <a href="./share.html"><div class="button" id="Share"> Share </div></a>
-        <a href="./"><div class="active button" id="Read"> Read </div></a>
-
+    </div>
+    <center>
+      <div id="container">
       </div>
-    </div>
-  <center>
-    <div id="container">
-    </div>
-
-
-  </center>
-
+    </center>
 
 </html>
+
 
 <script>
 
 var EtherShare;
 
-function getAccount() {
-  if (window.ethereum) {
-    ethereum.enable()
-    .then(function (accounts) {
-      document.getElementById('Account').innerHTML = acc2html(accounts);
-    })
-    .catch(function (reason) {
-      console.log(reason);
-      alert("without permission to send transaction to Ethereum");
-    })
-  }
-  else {
-    web3.eth.getAccounts(function (err, data){
-      document.getElementById('Account').innerHTML = acc2html(data);
-    });    
-  }
-}
-
 function clickReply(ShareID) {
-  if(openaction.length!=0 && ShareID==openaction[0] && openaction[2]=="reply")
+  /*if(openaction.length!=0 && ShareID==openaction[0] && 0==openaction[1] && openaction[2]=="reply")
     return cancel();
-  cancel();
+  cancel();*/
   var replyform = '<div class="replyForm"><table width="600px"><tr height="40px"><td align=left valign=top width="100px">Nickname</td><td align=left valign=top><input id="Nickname" type="text" class="shareInput oneLine" /></td></tr><tr height="100px"><td align=left valign=top>Content</td><td align=left valign=top><textarea id="Content" rows="5" class="shareInput"></textarea></td></tr><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>              </select>            </td>          </tr>          <tr height="40px">             <td align=left valign=top></td>            <td align=left valign=top>              <input type="checkbox" id="AllowUpdated" class="shareCheck" />Allow yourself to update it</td></tr><tr><td></td><td align=left valign=top><button class="submit" onclick="reply('+ShareID+')">Reply '+ShareID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
-  
-  getAccount();
+
+  web3.eth.getAccounts(function (err, data){
+    document.getElementById('Account').innerHTML = acc2html(data);
+  });
 
   document.getElementById('ActionTo'+ShareID+'-0').innerHTML=replyform;
-  openaction = [ShareID,0,"reply"];
-}
-
-function clickLike(ShareID, ReplyID) {
-  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="like")
-    return cancel();
-  cancel();
-  var likeform = '<div class="replyForm"><table width="600px"><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>              </select>            </td>          </tr>          <tr><td></td><td align=left valign=top><button class="submit" onclick="like('+ShareID+','+ReplyID+')">Like '+ShareID+','+ReplyID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
-
-  getAccount();
-
-  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=likeform;
-  openaction = [ShareID,ReplyID,"like"];
-}
-
-function clickReward(ShareID, ReplyID) {
-  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="reward")
-    return cancel();
-  cancel();
-  var rewardform = '<div class="replyForm"><table width="600px"><tr height="40px"><td align=left valign=top width="100px">Value (ETH)</td><td align=left valign=top><input id="Value" type="text" class="shareInput oneLine" /></td></tr><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>              </select>            </td>          </tr>          <tr><td></td><td align=left valign=top><button class="submit" onclick="reward('+ShareID+','+ReplyID+')">Reward '+ShareID+','+ReplyID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
-
-  getAccount();
-
-  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=rewardform;
-  openaction = [ShareID,ReplyID,"reward"];
-}
-
-var openaction = [];
-function cancel() {
-  if (openaction.length!=0) {
-    document.getElementById('ActionTo'+openaction[0]+'-'+openaction[1]).innerHTML="";
-    openaction = [];
-  }
+  //openaction = [ShareID,0,"reply"];
 }
 
 function acc2html(data) {
-	if (data.length==0) {
-	  return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
-	}
-	else {
-	  var str = '';
-	  for (i in data)
-	    str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
-	  return str;
-	}
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
 }
 
 function reply(ShareID){
@@ -213,25 +108,10 @@ function reply(ShareID){
   var content = document.getElementById("Content").value;
   var account = document.getElementById("Account").value;
   console.log(nickname, AllowUpdated, content, {from:account});
-  EtherShare.methods.ReplyShare(ShareID, nickname, AllowUpdated, content).send({from:account}, function(error,data){
-    //
-  });
-}
-
-function like(ShareID, ReplyID) {
-  var account = document.getElementById("Account").value;
-  EtherShareLike.methods.like(ShareID,ReplyID).send({from:account}, function(error,data){
-    //
-  });
-}
-
-function reward(ShareID, ReplyID) {
-  var value = document.getElementById("Value").value;
-  var account = document.getElementById("Account").value;
-  var towei = web3.toWei(value, 'ether');
-  console.log(towei);
-  EtherShareReward.methods.Reward(ShareID,ReplyID).send({value:towei,from:account}, function(error,data){
-    //
+  EtherShare.ReplyShare.sendTransaction(ShareID, nickname, AllowUpdated, content, {from:account}, function(error,data){
+    if(err) alert(222);
+    else
+      console.log(111);
   });
 }
 
@@ -252,12 +132,13 @@ function timestampToTime(timestamp) {
 
 
 
+
 function Share2html(ShareID, oneQuery) {
   var str = '<div class="oneShare">';
   str += '<b title="'+oneQuery.sender+'">'+oneQuery.nickname+'</b><br>';
   str += oneQuery.content.replace(/\n/g, '<br>')+'<br>';
 
-  str += '<div style="width:800px">';
+  str += '<div>';
   str +=  '<div style="display:inline;" >'+timestampToTime(oneQuery.timestamp)+'</div>';
   str +=  '<div onclick="clickReward('+ShareID+','+0+')" class="action">Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</div>';
   str +=  '<div onclick="clickLike('+ShareID+','+0+')" class="action">Like: '+oneQuery.like+'</div>';
@@ -268,14 +149,15 @@ function Share2html(ShareID, oneQuery) {
   str += '<div id="ReplyOf'+ShareID+'"></div>'+'</div>';
   return str;
 }
+
 function Reply2html(ShareID, ReplyID, oneQuery) {
   var str = '<div class="oneReply">'; 
   str += '#'+ReplyID+"&nbsp;"+oneQuery.nickname+'<br>';
   str += oneQuery.content.replace(/\n/g, '<br>');
 
-  str += '<div style="width:800px">';
+  str += '<div>';
   str += '<div style="display:inline;" >'+timestampToTime(oneQuery.timestamp)+'</div>';
-  str += '<div onclick="clickReward('+ShareID+','+ReplyID+')" class="action">Reward: '+oneQuery.reward+' ETH</div>';
+  str += '<div onclick="clickReward('+ShareID+','+ReplyID+')" class="action">Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</div>';
   str += '<div onclick="clickLike('+ShareID+','+ReplyID+')" class="action">Like: '+oneQuery.like+'</div>';
   str += '</div>';
 
@@ -286,10 +168,10 @@ function Reply2html(ShareID, ReplyID, oneQuery) {
 }
 
 function readShare(ShareID, ReplyID,  length) {
-
+  console.log("readingShare",ShareID,ReplyID);
   EtherShareQuery.methods.get(ShareID,ReplyID).call(function(error,data){
     if (error) {
-      console.log("no reply, next share");
+      console.log(error);
       //no reply, next share
       if(length>1)
         readShare(ShareID-1, 0, length-1);
@@ -297,7 +179,8 @@ function readShare(ShareID, ReplyID,  length) {
     else {
       var oneQuery = data;
 
-      console.log("reading",ShareID,ReplyID);
+      console.log("readingLike",ShareID,ReplyID);
+      console.log(oneQuery);
 
       if (ReplyID==0)
         document.getElementById('container').innerHTML += Share2html(ShareID, oneQuery);
@@ -326,11 +209,7 @@ function startApp(){
     });
 }
 
-var url = location.search;
-if(url.indexOf("imtoken")>0)
-  location.href="./mobile/";
-
-window.addEventListener('load', function() {
+window.addEventListener('load', async () => {
   // Modern dapp browsers...
   if (window.ethereum) {
     window.web3 = new Web3(ethereum);
@@ -341,13 +220,16 @@ window.addEventListener('load', function() {
   else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
     console.log("Legacy");
+    console.log(window.web3.version);
     startApp();
   }
   // Non-dapp browsers...
   else {
-    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  	//alert("No Web3!"); return;
+    alert("No Web3. Using provider from infura.io.");
+    window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/bf14a42f4ce744afb9c2eec7ba215b01"));
+    startApp();
   }
-})
-
+});
 
 </script>
