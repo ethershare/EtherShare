@@ -85,6 +85,7 @@
     }
 
   </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
 </head>
 <html>
   <div class="nav-outer">
@@ -144,19 +145,7 @@
 </html>
 
 <script>
-var EtherShareDonation = web3.eth.contract([{"constant":false,"inputs":[{"name":"nickname","type":"string"}],"name":"Donate","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"content","type":"string"}],"name":"FreeShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"donations","outputs":[{"name":"donator","type":"address"},{"name":"nickname","type":"string"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1");
-
-function submit(){
-  var nickname = document.getElementById("Nickname").value;
-  var content = document.getElementById("Content").value;
-  var account = document.getElementById("Account").value;
-  console.log(nickname, content, {from:account});
-  EtherShareDonation.FreeShare.sendTransaction(nickname, content, {from:account}, function(error,data){
-    if(err) alert(222);
-    else
-      console.log(111);
-  });
-}
+var EtherShareDonation;
 
 function donate() {
   var nickname = document.getElementById("Nickname").value;
@@ -164,7 +153,7 @@ function donate() {
   var account = document.getElementById("Account").value;
   var towei = web3.toWei(value, 'ether');
   console.log(towei);
-  EtherShareDonation.Donate.sendTransaction(nickname, {value:towei,from:account}, function(error,data){
+  EtherShareDonation.methods.Donate(nickname).send({value:towei,from:account}, function(error,data){
     //
   });
 }
@@ -201,13 +190,13 @@ function getAccount() {
 }
 
 function getDonation(index) {
-  EtherShareDonation.donations.call(index, function(error,data){
+  EtherShareDonation.methods.donations(index).call(function(error,data){
     if (error) {
       console.log("nothing!");
     }
     else {
       console.log("data",data);
-      var amount = web3.fromWei(data[2], 'ether').toString();
+      var amount = web3.utils.fromWei(data[2], 'ether').toString();
       document.getElementById("donations").innerHTML += "<div>"+data[1]+": "+amount+ "ETH"+"</div>";
       getDonation(index+1);
     }
@@ -215,26 +204,29 @@ function getDonation(index) {
 }
 
 function startApp(){
+  EtherShareDonation = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"nickname","type":"string"}],"name":"Donate","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"content","type":"string"}],"name":"FreeShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"donations","outputs":[{"name":"donator","type":"address"},{"name":"nickname","type":"string"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1");
   getDonation(0);
   getAccount();
 }
 
 
 window.addEventListener('load', function() {
-
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
-    // Use Mist/MetaMask's provider
-    //console.log(web3.currentProvider);
-  } else {
-    alert('No web3? You should consider trying MetaMask!');
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    web3js = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    console.log("Modern");
+    startApp();
   }
-
-  // Now you can start your app & access web3 freely:
-  startApp()
-
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    console.log("Legacy");
+    startApp();
+  }
+  // Non-dapp browsers...
+  else {
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
 })
 
 

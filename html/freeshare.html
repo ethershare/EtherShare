@@ -154,7 +154,7 @@ function submit(){
   var content = document.getElementById("Content").value;
   var account = document.getElementById("Account").value;
   console.log(nickname, content, {from:account});
-  EtherShareDonation.FreeShare.sendTransaction(nickname, content, {from:account}, function(error,data){
+  EtherShareDonation.methods.FreeShare(nickname, content).send({from:account}, function(error,data){
     if(err) alert(222);
     else
       console.log(111);

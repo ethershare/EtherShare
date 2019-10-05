@@ -213,14 +213,14 @@ function reply(ShareID){
   var content = document.getElementById("Content").value;
   var account = document.getElementById("Account").value;
   console.log(nickname, AllowUpdated, content, {from:account});
-  EtherShare.ReplyShare.sendTransaction(ShareID, nickname, AllowUpdated, content, {from:account}, function(error,data){
+  EtherShare.methods.ReplyShare(ShareID, nickname, AllowUpdated, content).send({from:account}, function(error,data){
     //
   });
 }
 
 function like(ShareID, ReplyID) {
   var account = document.getElementById("Account").value;
-  EtherShareLike.like.sendTransaction(ShareID,ReplyID,{}, function(error,data){
+  EtherShareLike.methods.like(ShareID,ReplyID).send({from:account}, function(error,data){
     //
   });
 }
@@ -230,7 +230,7 @@ function reward(ShareID, ReplyID) {
   var account = document.getElementById("Account").value;
   var towei = web3.toWei(value, 'ether');
   console.log(towei);
-  EtherShareReward.Reward.sendTransaction(ShareID,ReplyID,{value:towei,from:account}, function(error,data){
+  EtherShareReward.methods.Reward(ShareID,ReplyID).send({value:towei,from:account}, function(error,data){
     //
   });
 }
