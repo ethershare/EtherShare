@@ -106,6 +106,11 @@
     }
 
   </style>
+  <script type="text/javascript">
+    var url = location.search;
+    if(url.indexOf("imtoken")>0)
+      location.href="./mobile/";
+  </script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
 </head>
 <html>
@@ -327,9 +332,6 @@ function startApp(){
 }
 
 window.addEventListener('load', function() {
-  var url = location.search;
-  if(url.indexOf("imtoken")>0)
-    return location.href="./mobile/";
 
   // Modern dapp browsers...
   if (window.ethereum) {
@@ -345,7 +347,8 @@ window.addEventListener('load', function() {
   }
   // Non-dapp browsers...
   else {
-    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    return location.href="./cache.html";
   }
 })
 
