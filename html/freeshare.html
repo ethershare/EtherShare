@@ -12,10 +12,14 @@
         line-height: 20px;
     }
     .shareForm {
-        width:800; margin-top:5px; padding:10px; background-color:#ffffff; text-align:left;
+        width:800; margin-top:15px; padding:10px; background-color:#ffffff; text-align:left;
         box-shadow:0px 0px 3px rgba(51,51,51,0.2);
     }
-
+    .CacheMode {
+        width:800; margin-top:10px; padding:10px; background-color:#0096ff; text-align:left;
+        font: 15px/1.5 'Microsoft YaHei';
+        color: #ffffff;
+    }
     .oneLine {
       height:25px;
     }
@@ -97,6 +101,12 @@
 
   <center>
     <div id="container">
+      <div class="CacheMode">
+        EtherShareDonation enables user to share information for <b>free</b> (using donation) on Ethereum.<br>It is donated by the following people:
+        <div id="donations">
+        </div>
+      </div>
+
       <div class="shareForm">
         <table width="600px">
           <tr height="40px"> 
@@ -117,22 +127,17 @@
               </select>
             </td>
           </tr>
-          <tr height="40px"> 
-            <td align=left valign=top></td>
-            <td align=left valign=top>
-              <input type="checkbox" id="AllowUpdated" class="shareCheck" />Allow yourself to update it
-            </td>
-          </tr>
           <tr>
             <td></td>
             <td align=left valign=top>
-              <button class="submit" onclick="submit()">Submit</button>
+              <button class="submit" onclick="submit()">FreeShare</button>
               &nbsp;
-              <a href="freeshare.html" style="color:#949494">Free Share</button></a>
+              <a href="donate.html" style="color:#949494">I want to donate</button></a>
             </td>
           </tr> 
         </table>
       </div>
+
     </div>
 
 
@@ -142,18 +147,31 @@
 </html>
 
 <script>
-var EtherShare = web3.eth.contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}]).at("0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
+var EtherShareDonation;
 
 function submit(){
   var nickname = document.getElementById("Nickname").value;
-  var AllowUpdated = document.getElementById("AllowUpdated").checked;
   var content = document.getElementById("Content").value;
   var account = document.getElementById("Account").value;
-  console.log(nickname, AllowUpdated, content, {from:account});
-  EtherShare.NewShare.sendTransaction(nickname, AllowUpdated, content, {from:account}, function(error,data){
+  console.log(nickname, content, {from:account});
+  EtherShareDonation.FreeShare.sendTransaction(nickname, content, {from:account}, function(error,data){
     if(err) alert(222);
     else
       console.log(111);
+  });
+}
+
+function getDonation(index) {
+  EtherShareDonation.methods.donations(index).call(function(error,data){
+    if (error) {
+      console.log("nothing!");
+    }
+    else {
+      console.log("data",data);
+      var amount = web3.utils.fromWei(data[2], 'ether').toString();
+      document.getElementById("donations").innerHTML += "<div>"+data[1]+": "+amount+ "ETH"+"</div>";
+      getDonation(index+1);
+    }
   });
 }
 
@@ -174,7 +192,6 @@ function getAccount() {
   }
 }
 
-
 function startApp(){
   function acc2html(data) {
     if (data.length==0) {
@@ -187,7 +204,8 @@ function startApp(){
       return str;
     }
   }
-
+  EtherShareDonation = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"nickname","type":"string"}],"name":"Donate","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"content","type":"string"}],"name":"FreeShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"donations","outputs":[{"name":"donator","type":"address"},{"name":"nickname","type":"string"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1");
+  getDonation(0);
   getAccount();
 }
 
