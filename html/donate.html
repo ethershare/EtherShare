@@ -169,6 +169,37 @@ function donate() {
   });
 }
 
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
+
+function getAccount() {
+  if (window.ethereum) {
+    ethereum.enable()
+    .then(function (accounts) {
+      document.getElementById('Account').innerHTML = acc2html(accounts);
+    })
+    .catch(function (reason) {
+      console.log(reason);
+      alert("without permission to send transaction to Ethereum");
+    })
+  }
+  else {
+    web3.eth.getAccounts(function (err, data){
+      document.getElementById('Account').innerHTML = acc2html(data);
+    });    
+  }
+}
+
 function getDonation(index) {
   EtherShareDonation.donations.call(index, function(error,data){
     if (error) {
@@ -184,22 +215,8 @@ function getDonation(index) {
 }
 
 function startApp(){
-  function acc2html(data) {
-    if (data.length==0) {
-      return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
-    }
-    else {
-      var str = '';
-      for (i in data)
-        str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
-      return str;
-    }
-  }
   getDonation(0);
-  web3.eth.getAccounts(function (err, data){
-    console.log(data);
-    document.getElementById('Account').innerHTML = acc2html(data);
-  });
+  getAccount();
 }
 
 

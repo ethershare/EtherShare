@@ -175,6 +175,18 @@ function getDonation(index) {
   });
 }
 
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
 function getAccount() {
   if (window.ethereum) {
     ethereum.enable()
@@ -182,6 +194,7 @@ function getAccount() {
       document.getElementById('Account').innerHTML = acc2html(accounts);
     })
     .catch(function (reason) {
+      console.log(reason);
       alert("without permission to send transaction to Ethereum");
     })
   }
@@ -193,17 +206,6 @@ function getAccount() {
 }
 
 function startApp(){
-  function acc2html(data) {
-    if (data.length==0) {
-      return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
-    }
-    else {
-      var str = '';
-      for (i in data)
-        str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
-      return str;
-    }
-  }
   EtherShareDonation = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"nickname","type":"string"}],"name":"Donate","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"content","type":"string"}],"name":"FreeShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"donations","outputs":[{"name":"donator","type":"address"},{"name":"nickname","type":"string"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1");
   getDonation(0);
   getAccount();

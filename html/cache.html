@@ -148,6 +148,7 @@ function getAccount() {
       document.getElementById('Account').innerHTML = acc2html(accounts);
     })
     .catch(function (reason) {
+      console.log(reason);
       alert("without permission to send transaction to Ethereum");
     })
   }

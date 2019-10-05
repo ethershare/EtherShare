@@ -157,6 +157,18 @@ function submit(){
   });
 }
 
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
 function getAccount() {
   if (window.ethereum) {
     ethereum.enable()
@@ -164,6 +176,7 @@ function getAccount() {
       document.getElementById('Account').innerHTML = acc2html(accounts);
     })
     .catch(function (reason) {
+      console.log(reason);
       alert("without permission to send transaction to Ethereum");
     })
   }
@@ -176,18 +189,6 @@ function getAccount() {
 
 
 function startApp(){
-  function acc2html(data) {
-    if (data.length==0) {
-      return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
-    }
-    else {
-      var str = '';
-      for (i in data)
-        str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
-      return str;
-    }
-  }
-
   getAccount();
 }
 
