@@ -329,7 +329,7 @@ function startApp(){
 window.addEventListener('load', function() {
   var url = location.search;
   if(url.indexOf("imtoken")>0)
-    location.href="./mobile/";
+    return location.href="./mobile/";
 
   // Modern dapp browsers...
   if (window.ethereum) {
