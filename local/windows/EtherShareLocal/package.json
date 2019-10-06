@@ -1,0 +1,31 @@
+{
+  "main": "index.html", //入口
+  "name": "ethershare",//字符串必须是小写字母或者数字，可以包含"." 或者"_"或者"-" ，不允许带空格,必须唯一
+  "description": "EtherShareLocal",//描述
+  "version": "1.0.0",//版本
+  "keywords": [ "demo", "node-webkit" ],//关键字
+  "window": {//窗体配置
+    "title": "node-webkit demo", //窗体的标题
+    "icon": "favicon.png",//窗体的ico图标
+    "toolbar": false,//是否要工具栏
+    "frame": true,//bool值。如果设置为false，程序将无边框显示 也就是没有系统默认的关闭，最小化，全屏按钮
+    "width": 1000,//窗口的大小
+    "height": 750, //窗口的大小
+    "position": "center", //字符串。窗口打开时的位置，可以设置为“null”、“center”或者“mouse”。
+    "min_width": 400,//最小宽度
+    "min_height": 200,//最小高度
+    "as_desktop" :false,//是否作为桌面背景窗口显示
+    "resizable":true,//是否允许调整窗口大小
+    "always-on-top":false,//窗口是否置顶
+    "fullscreen":false,//是否全屏显示 
+    "show_in_taskbar":true,//是否显示任务栏图标 
+    "show":true, //如果设置为false，启动时窗口不可见
+    "kiosk":false //是否使用kiosk模式。如果使用kiosk模式，应用程序将全屏显示，并且阻止用户离开应用
+ 
+},
+  "webkit": {
+    "plugin": false,//bool值，是否加载插件，如flash，默认值为false。
+    "java":false, //bool值 是否加载java applets
+    " page-cache":true //是否启用页面缓存
+    }
+}

@@ -1,0 +1,217 @@
+<head>
+  <title>EtherShare</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    html {
+        background-color: rgb(230, 236, 240);
+        padding-bottom: 50px;
+    }
+    body {
+        margin: 0;
+        font: 15px/1.5 'Microsoft YaHei';
+        line-height: 20px;
+    }
+    .shareForm {
+        width:800; margin-top:5px; padding:10px; background-color:#ffffff; text-align:left;
+        box-shadow:0px 0px 3px rgba(51,51,51,0.2);
+    }
+
+    .oneLine {
+      height:25px;
+    }
+
+    .shareInput {
+      width:100%; background:#f2f2f2;  border: none;
+      padding:2px;
+    }
+
+    .shareCheck {
+      width:12px;height:12px; margin-left:0px; margin:top:5px; margin-bottom:0px; background:#f2f2f2;  border: none;
+    }
+
+    .nav-outer {
+        margin-bottom:20px;
+        background-color:#ffffff;
+        box-shadow:0px 0px 5px rgba(51,51,51,0.5);
+        height: 120px;
+    }
+
+    .nav {
+      width: 800;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 10px;
+    }
+
+    .button {
+      float:right;
+      width:50px;
+      margin-top:75px;
+      margin-left: 15px;
+      margin-right: 15px; 
+      padding-bottom:25px;
+      font: 18px/0.5 'Microsoft YaHei';
+      color:#949494;
+      text-align: center;
+    }
+
+    .button:hover{
+      border-bottom: #0096ff 2px solid;
+      color:#0096ff;
+    }
+
+    .submit {
+      font: 15px/0.5 'Microsoft YaHei';
+      width:120px;
+      height: 30px;
+      background-color:#ffffff;
+      border: #949494 1px solid;
+      color:#949494;
+      margin-right: 10px;
+    }
+
+    .submit:hover {
+      border: #0096ff 1px solid;
+      color:#0096ff;
+      cursor:pointer;
+    }
+
+    .active{
+      border-bottom: #0096ff 2px solid;
+      color:#0096ff;
+    }
+
+  </style>
+  <script type="text/javascript" src="web3.min.js"></script>
+</head>
+<html>
+  <div class="nav-outer">
+   <div class="nav">
+     <img src="logo2.png" height="100px" />
+     <a href="./about.html"><div class="button" id="About"> About </div></a>
+     <a href="./share.html"><div class="active button" id="Share"> Share </div></a>
+     <a href="./index.html"><div class="button" id="Read"> Read </div></a>
+
+   </div>
+  </div>
+
+  <center>
+    <div id="container">
+      <div class="shareForm">
+        <table width="600px">
+          <tr height="40px"> 
+            <td align=left valign=top width="100px">Nickname</td>
+            <td align=left valign=top>
+              <input id="Nickname" type="text" class="shareInput oneLine" />
+            </td>
+          </tr>
+          <tr height="100px"> 
+            <td align=left valign=top>Content</td>
+            <td align=left valign=top><textarea id="Content" rows="5" class="shareInput"></textarea></td>
+          </tr>
+          <tr height="40px"> 
+            <td align=left valign=top>Account</td>
+            <td align=left valign=top>
+              <select class="shareInput oneLine" id="Account">
+                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>
+              </select>
+            </td>
+          </tr>
+          <tr height="40px"> 
+            <td align=left valign=top></td>
+            <td align=left valign=top>
+              <input type="checkbox" id="AllowUpdated" class="shareCheck" />Allow yourself to update it
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td align=left valign=top>
+              <button class="submit" onclick="submit()">Submit</button>
+              &nbsp;
+              <a href="freeshare.html" style="color:#949494">Free Share</button></a>
+            </td>
+          </tr> 
+        </table>
+      </div>
+    </div>
+
+
+  </center>
+
+
+</html>
+
+<script>
+var EtherShare;
+
+function submit(){
+  var nickname = document.getElementById("Nickname").value;
+  var AllowUpdated = document.getElementById("AllowUpdated").checked;
+  var content = document.getElementById("Content").value;
+  var account = document.getElementById("Account").value;
+  console.log(nickname, AllowUpdated, content, {from:account});
+  EtherShare.methods.NewShare(nickname, AllowUpdated, content).send({from:account}, function(error,data){
+    if(err) alert(222);
+    else
+      console.log(111);
+  });
+}
+
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
+function getAccount() {
+  if (window.ethereum) {
+    ethereum.enable()
+    .then(function (accounts) {
+      document.getElementById('Account').innerHTML = acc2html(accounts);
+    })
+    .catch(function (reason) {
+      console.log(reason);
+      alert("without permission to send transaction to Ethereum");
+    })
+  }
+  else {
+    web3.eth.getAccounts(function (err, data){
+      document.getElementById('Account').innerHTML = acc2html(data);
+    });    
+  }
+}
+
+
+function startApp(){
+  EtherShare = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}],"0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
+  getAccount();
+}
+
+
+window.addEventListener('load', function() {
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    console.log("Modern");
+    startApp();
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    console.log("Legacy");
+    startApp();
+  }
+  // Non-dapp browsers...
+  else {
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
+})
+
+
+</script>

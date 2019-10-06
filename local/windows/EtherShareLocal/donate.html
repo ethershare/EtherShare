@@ -1,0 +1,219 @@
+<head>
+  <title>EtherShare</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    html {
+        background-color: rgb(230, 236, 240);
+        padding-bottom: 50px;
+    }
+    body {
+        margin: 0;
+        font: 15px/1.5 'Microsoft YaHei';
+        line-height: 20px;
+    }
+    .shareForm {
+        width:800; margin-top:15px; padding:10px; background-color:#ffffff; text-align:left;
+        box-shadow:0px 0px 3px rgba(51,51,51,0.2);
+    }
+    .CacheMode {
+        width:800; margin-top:10px; padding:10px; background-color:#0096ff; text-align:left;
+        font: 15px/1.5 'Microsoft YaHei';
+        color: #ffffff;
+    }
+    .oneLine {
+      height:25px;
+    }
+
+    .shareInput {
+      width:100%; background:#f2f2f2;  border: none;
+      padding:2px;
+    }
+
+    .shareCheck {
+      width:12px;height:12px; margin-left:0px; margin:top:5px; margin-bottom:0px; background:#f2f2f2;  border: none;
+    }
+
+    .nav-outer {
+        margin-bottom:20px;
+        background-color:#ffffff;
+        box-shadow:0px 0px 5px rgba(51,51,51,0.5);
+        height: 120px;
+    }
+
+    .nav {
+      width: 800;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 10px;
+    }
+
+    .button {
+      float:right;
+      width:50px;
+      margin-top:75px;
+      margin-left: 15px;
+      margin-right: 15px; 
+      padding-bottom:25px;
+      font: 18px/0.5 'Microsoft YaHei';
+      color:#949494;
+      text-align: center;
+    }
+
+    .button:hover{
+      border-bottom: #0096ff 2px solid;
+      color:#0096ff;
+    }
+
+    .submit {
+      font: 15px/0.5 'Microsoft YaHei';
+      width:100px;
+      height: 30px;
+      background-color:#ffffff;
+      border: #949494 1px solid;
+      color:#949494;
+    }
+
+    .submit:hover {
+      border: #0096ff 1px solid;
+      color:#0096ff;
+      cursor:pointer;
+    }
+
+    .active{
+      border-bottom: #0096ff 2px solid;
+      color:#0096ff;
+    }
+
+  </style>
+  <script type="text/javascript" src="web3.min.js"></script>
+</head>
+<html>
+  <div class="nav-outer">
+   <div class="nav">
+     <img src="logo2.png" height="100px" />
+     <a href="./about.html"><div class="button" id="About"> About </div></a>
+     <a href="./share.html"><div class="active button" id="Share"> Share </div></a>
+     <a href="./index.html"><div class="button" id="Read"> Read </div></a>
+
+   </div>
+  </div>
+
+  <center>
+    <div id="container">
+      <div class="CacheMode">
+        EtherShareDonation enables user to share information for <b>free</b> (using donation) on Ethereum.<br>It is donated by the following people:
+        <div id="donations">
+        </div>
+      </div>
+
+      <div class="shareForm">
+        <table width="600px">
+          <tr height="40px"> 
+            <td align=left valign=top width="100px">Nickname</td>
+            <td align=left valign=top>
+              <input id="Nickname" type="text" class="shareInput oneLine" />
+            </td>
+          </tr>
+          <tr height="40px">
+            <td align=left valign=top width="100px">Value (ETH)</td>
+            <td align=left valign=top>
+              <input id="Value" type="text" class="shareInput oneLine" />
+            </td>
+          </tr>
+          <tr height="40px"> 
+            <td align=left valign=top>Account</td>
+            <td align=left valign=top>
+              <select class="shareInput oneLine" id="Account">
+                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td align=left valign=top>
+              <button class="submit" onclick="donate()">Donate</button>
+            </td>
+          </tr> 
+        </table>
+      </div>
+    </div>
+
+
+  </center>
+
+
+</html>
+
+<script>
+var EtherShareDonation;
+
+function donate() {
+  var nickname = document.getElementById("Nickname").value;
+  var value = document.getElementById("Value").value;
+  var account = document.getElementById("Account").value;
+  var towei = web3.toWei(value, 'ether');
+  console.log(towei);
+  EtherShareDonation.methods.Donate(nickname).send({value:towei,from:account}, function(error,data){
+    //
+  });
+}
+
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
+
+function getAccount() {
+  if (window.ethereum) {
+    ethereum.enable()
+    .then(function (accounts) {
+      document.getElementById('Account').innerHTML = acc2html(accounts);
+    })
+    .catch(function (reason) {
+      console.log(reason);
+      alert("without permission to send transaction to Ethereum");
+    })
+  }
+  else {
+    web3.eth.getAccounts(function (err, data){
+      document.getElementById('Account').innerHTML = acc2html(data);
+    });    
+  }
+}
+
+function getDonation(index) {
+  EtherShareDonation.methods.donations(index).call(function(error,data){
+    if (error) {
+      console.log("nothing!");
+    }
+    else {
+      console.log("data",data);
+      var amount = web3.utils.fromWei(data[2], 'ether').toString();
+      document.getElementById("donations").innerHTML += "<div>"+data[1]+": "+amount+ "ETH"+"</div>";
+      getDonation(index+1);
+    }
+  });
+}
+
+function startApp(){
+  EtherShareDonation = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"nickname","type":"string"}],"name":"Donate","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"content","type":"string"}],"name":"FreeShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"donations","outputs":[{"name":"donator","type":"address"},{"name":"nickname","type":"string"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1");
+  getDonation(0);
+  getAccount();
+}
+
+
+window.addEventListener('load', function() {
+    window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/bf14a42f4ce744afb9c2eec7ba215b01"));
+    startApp();
+})
+
+
+</script>
