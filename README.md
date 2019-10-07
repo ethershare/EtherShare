@@ -9,14 +9,15 @@ The website is not the only one entry to EtherShare. EtherShare is a DApp. So yo
 There are several ways to use EtherShare since it is a DApp.
 
 **Visit the Website**
-> You can just vist `ethershare.org` or `ethershare.github.io` to use EtherShare.
-> Please install Metamask or use other Ethereum wallets that supporting DApp browsers. Or you will have the only access to the `ethershare.org/cache.html`.
+You can just vist `ethershare.org` or `ethershare.github.io` to use EtherShare.
+
+Please install Metamask or use other Ethereum wallets that supporting DApp browsers. Or you can only view the Shares to the `ethershare.org/cache.html`.
 
 **Download the HTML Files**
-> TBD
+TBD
 
 **Use the EtherShareClient**
-> TBD
+TBD
 
 
 ## Smart Contracts
