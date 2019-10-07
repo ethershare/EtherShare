@@ -8,17 +8,17 @@ EtherShare is a project to share information with permanent storage and open acc
 
 There are several optional ways to use EtherShare since it is a DApp.
 
-**Option 1: Visit the Website**
+**Option 1 : Visit the Website**
 
 You can just visit [ethershare.org](http://ethershare.org) or [ethershare.github.io](https://ethershare.github.io) to use EtherShare.
 
 Please install Metamask or use other Ethereum wallets that supporting DApp browsers. Or you can only view the Shares in the `ethershare.org/cache.html`.
 
-**Option 2: Download the HTML Files**
+**Option 2 : Download the HTML Files**
 
 TBD
 
-**Option 3: Use the EtherShareClient**
+**Option 3 : Use the EtherShareClient**
 
 TBD
 
