@@ -111,7 +111,7 @@
     if(url.indexOf("imtoken")>0)
       location.href="./mobile/";
   </script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
 </head>
 <html>
   
@@ -137,6 +137,7 @@
 <script>
 
 var EtherShare;
+var accountBeforeLoading;
 
 function getAccount() {
   if (window.ethereum) {
@@ -155,6 +156,19 @@ function getAccount() {
     });    
   }
 }
+
+function getAccountBeforeLoading() {
+  web3.eth.getAccounts(function (err, data){
+    if(err) {
+      console.log("cannot get account before loading");
+    }
+    else {
+      accountBeforeLoading = data;
+      console.log("accountBeforeLoading", accountBeforeLoading);
+    }
+  });    
+}
+
 
 function clickReply(ShareID) {
   if(openaction.length!=0 && ShareID==openaction[0] && openaction[2]=="reply")
@@ -190,6 +204,17 @@ function clickReward(ShareID, ReplyID) {
 
   document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=rewardform;
   openaction = [ShareID,ReplyID,"reward"];
+}
+
+
+function clickUpdate(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="update")
+    return cancel();
+  cancel();
+  var updateform = '<div class="replyForm"><table width="600px"><tr height="100px"><td align=left valign=top>Content</td><td align=left valign=top><textarea id="Content" rows="5" class="shareInput"></textarea></td></tr><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">'+acc2html([document.getElementById("SenderOf"+ShareID+"-"+ReplyID).title])+'</select>            </td>          </tr>         <tr><td></td><td align=left valign=top><button class="submit" onclick="update('+ShareID+','+ReplyID+')">Update '+ShareID+','+ReplyID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
+
+  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=updateform;
+  openaction = [ShareID,ReplyID,"update"];
 }
 
 var openaction = [];
@@ -240,6 +265,15 @@ function reward(ShareID, ReplyID) {
   });
 }
 
+function update(ShareID, ReplyID){
+  var content = document.getElementById("Content").value;
+  var account = document.getElementById("Account").value;
+  console.log(ShareID, ReplyID, content, {from:account});
+  EtherShare.methods.Update(ShareID, ReplyID, content).send({from:account}, function(error,data){
+    //
+  });
+}
+
 function add0(num) {
   return num< 10 ? '0'+num : num;
 } 
@@ -255,11 +289,9 @@ function timestampToTime(timestamp) {
   return Y+M+D+h+m+s;
 }
 
-
-
 function Share2html(ShareID, oneQuery) {
   var str = '<div class="oneShare">';
-  str += '<b title="'+oneQuery.sender+'">'+oneQuery.nickname+'</b><br>';
+  str += '<b id="SenderOf'+ShareID+'-0" title="'+oneQuery.sender+'">'+oneQuery.nickname+'</b><br>';
   str += oneQuery.content.replace(/\n/g, '<br>')+'<br>';
 
   str += '<div style="width:800px">';
@@ -267,6 +299,9 @@ function Share2html(ShareID, oneQuery) {
   str +=  '<div onclick="clickReward('+ShareID+','+0+')" class="action">Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</div>';
   str +=  '<div onclick="clickLike('+ShareID+','+0+')" class="action">Like: '+oneQuery.like+'</div>';
   str +=  '<div onclick="clickReply('+ShareID+')" class="action">Reply</div>';
+  if(oneQuery.AllowUpdated && accountBeforeLoading.indexOf(oneQuery.sender)>=0) {
+    str +=  '<div onclick="clickUpdate('+ShareID+','+0+')" class="action">Update</div>';
+  }
   str += '</div>';
 
   str += '<div id="ActionTo'+ShareID+'-0"></div>';
@@ -275,13 +310,16 @@ function Share2html(ShareID, oneQuery) {
 }
 function Reply2html(ShareID, ReplyID, oneQuery) {
   var str = '<div class="oneReply">'; 
-  str += '#'+ReplyID+"&nbsp;"+oneQuery.nickname+'<br>';
+  str += '<div id="SenderOf'+ShareID+'-'+ReplyID+'" title="'+oneQuery.sender+'">#'+ReplyID+"&nbsp;"+oneQuery.nickname+'</div>';
   str += oneQuery.content.replace(/\n/g, '<br>');
 
   str += '<div style="width:800px">';
   str += '<div style="display:inline;" >'+timestampToTime(oneQuery.timestamp)+'</div>';
   str += '<div onclick="clickReward('+ShareID+','+ReplyID+')" class="action">Reward: '+oneQuery.reward+' ETH</div>';
   str += '<div onclick="clickLike('+ShareID+','+ReplyID+')" class="action">Like: '+oneQuery.like+'</div>';
+  if(oneQuery.AllowUpdated && accountBeforeLoading.indexOf(oneQuery.sender)>=0) {
+    str +=  '<div onclick="clickUpdate('+ShareID+','+ReplyID+')" class="action">Update</div>';
+  }
   str += '</div>';
 
   str += '<div id="ActionTo'+ShareID+'-'+ReplyID+'"></div>';
@@ -315,6 +353,8 @@ function readShare(ShareID, ReplyID,  length) {
 }
 
 function startApp(){
+  getAccountBeforeLoading();
+
   EtherShare = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}],"0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
 
   EtherShareLike = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"}],"name":"like","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allLike","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x43820f75f021c34ce13ded1595633ed39b79ab47");
