@@ -29,12 +29,14 @@ The contract addresses are 0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e, 0x475de1f
 
 You can find the state of it on [StateOfTheDApps](https://www.stateofthedapps.com/dapps/ethershare).
 
-You can review the code and trasactions through Ethereum explorer (e.g., Etherscan.io): 
-[EtherShare](https://etherscan.io/address/0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e), 
-[EtherShareDonation](https://etherscan.io/address/0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1), 
-[EtherShareReward](https://etherscan.io/address/0x28daa51dc3d80a951af9c451d174f0c7156c6876),
-[EtherShareLike](https://etherscan.io/address/0x43820f75f021c34ce13ded1595633ed39b79ab47), 
-[EtherShareQuery](https://etherscan.io/address/0x71de0d9fea931b42297d94cac5ec915410e1da99).
+You can review the source code and trasactions through Ethereum explorer (e.g., Etherscan.io): 
+Contract | Address | Explorer
+-|-|-
+EtherShare | 0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e | [Etherscan](https://etherscan.io/address/0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e) |
+EtherShareDonation | 0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1 | [Etherscan](https://etherscan.io/address/0x475de1f3e1ba5aeefc9fc694852c8fce59b353a1) |
+EtherShareReward | 0x28daa51dc3d80a951af9c451d174f0c7156c6876 | [Etherscan](https://etherscan.io/address/0x28daa51dc3d80a951af9c451d174f0c7156c6876) |
+EtherShareLike | 0x43820f75f021c34ce13ded1595633ed39b79ab47 | [Etherscan](https://etherscan.io/address/0x43820f75f021c34ce13ded1595633ed39b79ab47) |
+EtherShareQuery | 0x71de0d9fea931b42297d94cac5ec915410e1da99 | [Etherscan](https://etherscan.io/address/0x71de0d9fea931b42297d94cac5ec915410e1da99) |
 
 You can review all the source code on https://github.com/ethershare/ethershare.
 
