@@ -258,7 +258,7 @@ function like(ShareID, ReplyID) {
 function reward(ShareID, ReplyID) {
   var value = document.getElementById("Value").value;
   var account = document.getElementById("Account").value;
-  var towei = web3.toWei(value, 'ether');
+  var towei = web3.utils.toWei(value, 'ether');
   console.log(towei);
   EtherShareReward.methods.Reward(ShareID,ReplyID).send({value:towei,from:account}, function(error,data){
     //
