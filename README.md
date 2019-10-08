@@ -30,6 +30,7 @@ The contract addresses are 0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e, 0x475de1f
 You can find the state of it on [StateOfTheDApps](https://www.stateofthedapps.com/dapps/ethershare).
 
 You can review the source code and trasactions through Ethereum explorer (e.g., Etherscan.io): 
+
 Contract | Address | Explorer
 -|-|-
 EtherShare | 0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e | [Etherscan](https://etherscan.io/address/0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e) |
