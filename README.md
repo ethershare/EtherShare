@@ -15,15 +15,16 @@ Please install Metamask or use other Ethereum wallets that supporting DApp brows
 
 **Option 2 : Download the HTML Files**
 
-First, clone the source code from this repository (the HTML files are the same as ethershare.github.io).  
-`git clone https://github.com/ethershare/ethershare.git`  
-Then you can see the HTML files.  
-`cd EtherShare/html/`  
-Copy the HTML files to the directory of your HTTP server.
+First, clone the source code from this repository (the HTML files are the same as ethershare.github.io). `git clone https://github.com/ethershare/ethershare.git`
+
+Then you can see the HTML files. `cd EtherShare/html/`  and copy the HTML files to the directory of your HTTP server.
+Take [XAMPP](https://www.apachefriends.org/) as an example. The files in `EtherShare/html/` should be copied into `C:/xampp/htdocs` or `/opt/xamppp/htdocs/`.
+
+After that, you can visit `localhost` to use EtherShare (Metamask or other Ethereum DApp browsers are also required).
 
 **Option 3 : Use the EtherShareClient**
 
-TBD
+EtherShareClient is working in progress. For an alpha version in Windows-x64, you can just download and unzip [EtherShareClient-win-x64.zip](https://github.com/ethershare/EtherShareClient/raw/master/EtherShareClient-win-x64.zip) then run the `run.bat`.
 
 **Option 4 : Deploy on Your Private Blockchain**
 
