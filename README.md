@@ -15,7 +15,8 @@ Please install Metamask or use other Ethereum wallets that supporting DApp brows
 
 **Option 2 : Download the HTML Files**
 
-First, clone the source code from this repository (the HTML files are the same as ethershare.github.io). `git clone https://github.com/ethershare/ethershare.git`
+First, clone the source code from this repository (the HTML files are the same as ethershare.github.io).  
+`git clone https://github.com/ethershare/ethershare.git`
 
 Then you can see the HTML files. `cd EtherShare/html/`  and copy the HTML files to the directory of your HTTP server.
 
