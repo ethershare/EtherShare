@@ -11,7 +11,8 @@ There are several optional ways to use EtherShare since it is a DApp.
 **Option 1 : Visit the Website**
 
 You can just visit [ethershare.org](http://ethershare.org) or [ethershare.github.io](https://ethershare.github.io) to use EtherShare.  
-Please install Metamask or use other Ethereum wallets that supporting DApp browsers. Or you can only view the Shares in the `cache.html`.
+Please install Metamask or use other Ethereum wallets that supporting DApp browsers. Or you can only view the Shares.
+
 
 **Option 2 : Download the HTML Files**
 
