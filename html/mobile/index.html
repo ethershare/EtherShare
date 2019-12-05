@@ -1,117 +1,254 @@
+<html lang="zh-cmn-Hans">
 <head>
-  <title>EtherShare</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <style type="text/css">
-    html {
-        background-color:#ffffff;
-        padding-bottom: 50px;
-    }
-    body {
-        margin: 0;
-        font: 30px/1.5 'Microsoft YaHei',sans-serif;
-        color:#333333;
-        line-height: 45px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>EtherShare</title>
+    <link rel="stylesheet" href="./weui.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
 
-    .nav-outer {
-        background-color:#ffffff;
-        box-shadow:0px 0px 5px rgba(51,51,51,0.5);
-    }
 
-    .logo {
-      /*padding: 20px;
-      padding-left:3%;*/
+    <style>
+    .dark {
+      color: #666666;
     }
-
-    .button {
-      display: inline-block;
-      color: #949494;
-      font-size: 50px;
-      margin-right: 19px;
-      margin: 20px;
-      padding: 0;
-      list-style: none;
+    .blue {
+      color: #0096ff;
     }
-
-    .oneShare {
-      margin-top:30px;
-      padding-left:3%;
-      padding-right:3%;
-      padding-bottom: 30px;
-      background-color:#ffffff;
-      text-align:left;
-      border-bottom: #e2e2e2 2px solid;
+    .gray {
+      color: #C0C0C0;
+    }
+    .inline{
+      display: inline;
+    }
+    .font13 {
+      font-size:13px;
+    }
+    .font15 {
+      font-size:15px;
+    }
+    .font16 {
+      font-size: 16px;
       word-wrap: break-word;
     }
-
-    .oneReply {
-        margin-top:10px;
-        border-top:  #e2e2e2 2px solid;
-        padding-top: 10px;
+    .noleftrightpadding {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .weui-form-preview__ft{
+      border-top: 0.5px solid rgba(0,0,0,.1);
+      border-bottom: 0.5px solid rgba(0,0,0,.1);
     }
 
-    .action{
-      float:right;
-      margin-right:10px;
-      color:#949494;
-      text-decoration: underline
-    }
-
-  </style>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
+    </style>
 </head>
-<html>
-  
-    <div class="nav-outer">
-    </div>
-    <center>
-      <div id="container">
+
+<body style="background-color: rgb(230, 236, 240)">
+
+<div class="container" id="container">
+  <div class="page tabbar js_show">
+      <div class="page__bd" style="height: 100%;">
+          <div class="weui-tab">
+              <div class="weui-tab__panel" id="ShareContainer">
+              </div>
+
+              <div class="weui-tabbar" id="xiamian">
+                  <a href="javascript:;" onclick="goto('./index.html')"  class="weui-tabbar__item weui-bar__item_on">
+                      <i class="weui-icon-search blue"></i>
+                      <p class="weui-tabbar__label font15">Read</p>
+                  </a>
+                  <a href="javascript:;" onclick="goto('./share.html')" class="weui-tabbar__item">
+                    <i class="weui-icon-info gray"></i>
+                      <p class="weui-tabbar__label font15 gray">Share</p>
+                  </a>
+              </div>
+          </div>
       </div>
-    </center>
+  </div>
+</div>
+<div id="loadingToast"></div>
 
+</body>
 </html>
-
 
 <script>
 
 var EtherShare;
+var accountBeforeLoading;
+
+function getAccount() {
+  if (window.ethereum) {
+    ethereum.enable()
+    .then(function (accounts) {
+      document.getElementById('Account').innerHTML = acc2html(accounts);
+    })
+    .catch(function (reason) {
+      console.log(reason);
+      alert("without permission to send transaction to Ethereum");
+    })
+  }
+  else {
+    web3.eth.getAccounts(function (err, data){
+      document.getElementById('Account').innerHTML = acc2html(data);
+    });    
+  }
+}
+
+function getAccountBeforeLoading() {
+  web3.eth.getAccounts(function (err, data){
+    if(err) {
+      console.log("cannot get account before loading");
+    }
+    else {
+      accountBeforeLoading = data;
+      console.log("accountBeforeLoading", accountBeforeLoading);
+    }
+  });    
+}
+
 
 function clickReply(ShareID) {
-  /*if(openaction.length!=0 && ShareID==openaction[0] && 0==openaction[1] && openaction[2]=="reply")
+  if(openaction.length!=0 && ShareID==openaction[0] && openaction[2]=="reply")
     return cancel();
-  cancel();*/
-  var replyform = '<div class="replyForm"><table width="600px"><tr height="40px"><td align=left valign=top width="100px">Nickname</td><td align=left valign=top><input id="Nickname" type="text" class="shareInput oneLine" /></td></tr><tr height="100px"><td align=left valign=top>Content</td><td align=left valign=top><textarea id="Content" rows="5" class="shareInput"></textarea></td></tr><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">                <option value=null>No accounts found. Please connect to MetaMask or Mist.</option>              </select>            </td>          </tr>          <tr height="40px">             <td align=left valign=top></td>            <td align=left valign=top>              <input type="checkbox" id="AllowUpdated" class="shareCheck" />Allow yourself to update it</td></tr><tr><td></td><td align=left valign=top><button class="submit" onclick="reply('+ShareID+')">Reply '+ShareID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
-
-  web3.eth.getAccounts(function (err, data){
-    document.getElementById('Account').innerHTML = acc2html(data);
-  });
+  cancel();
+  var replyform = '<div class="weui-cells weui-cells_form"><div class="weui-cell" style="padding-left: 0px; padding-right: 0px;"><div class="weui-cell__bd" ><input name="tel" class="weui-input" id="Nickname"  placeholder="Nickname"></div></div><div class="weui-cell" style="padding-left: 0px; padding-right: 0px;"><div class="weui-cell__bd" ><input name="tel" class="weui-input" id="Content" placeholder="Content"></div></div><div class="weui-cell weui-cell_switch" style="padding-left: 0px; padding-right: 0px;"><div class="weui-cell__bd gray">Allow yourself to update</div><div class="weui-cell__ft"><label for="switchCP" class="weui-switch-cp"><input id="switchCP" class="weui-switch-cp__input" type="checkbox"><div class="weui-switch-cp__box"></div></label></div></div><div class="weui-cell weui-cell_select"><div class="weui-cell__bd"><select class="weui-select gray font13" id="Account" style="padding-left: 0px; padding-right: 0px;"><option value=null>No accounts found. Please connect to Ethereum.</option></select></div></div></div><div class="weui-form-preview__ft"><a class="weui-form-preview__btn blue" onclick="reply('+ShareID+')">Reply '+ShareID+'</a><a class="weui-form-preview__btn gray" onclick="cancel()">Cancel</a></div>';
+  
+  getAccount();
 
   document.getElementById('ActionTo'+ShareID+'-0').innerHTML=replyform;
-  //openaction = [ShareID,0,"reply"];
+  openaction = [ShareID,0,"reply"];
+}
+
+function clickLike(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="like")
+    return cancel();
+  cancel();
+  var likeform = '<div class="weui-cells weui-cells_form"></div><div class="weui-cell weui-cell_select"><div class="weui-cell__bd"><select class="weui-select gray font13" id="Account" style="padding-left: 0px; padding-right: 0px;"><option value=null>No accounts found. Please connect to Ethereum.</option></select></div></div></div><div class="weui-form-preview__ft"><a class="weui-form-preview__btn blue" onclick="like('+ShareID+','+ReplyID+')">Like '+ShareID+','+ReplyID+'</a><a class="weui-form-preview__btn gray" onclick="cancel()">Cancel</a></div>';
+
+  getAccount();
+
+  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=likeform;
+  openaction = [ShareID,ReplyID,"like"];
+}
+
+
+function clickForward(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="forward")
+    return cancel();
+  cancel();
+
+  openaction = [ShareID,ReplyID,"forward"];
+
+  goto("./forward.html?s="+ShareID+"&r="+ReplyID);
+}
+
+function clickReward(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="reward")
+    return cancel();
+  cancel();
+  var rewardform = '<div class="weui-cells weui-cells_form"><div class="weui-cell" style="padding-left: 0px; padding-right: 0px;"><div class="weui-cell__bd" ><input name="tel" class="weui-input" id="Value" placeholder="Value(ETH)"></div></div><div class="weui-cell weui-cell_select"><div class="weui-cell__bd"><select class="weui-select gray font13" id="Account" style="padding-left: 0px; padding-right: 0px;"><option value=null>No accounts found. Please connect to Ethereum.</option></select></div></div></div><div class="weui-form-preview__ft"><a class="weui-form-preview__btn blue" onclick="reward('+ShareID+','+ReplyID+')">Reward '+ShareID+','+ReplyID+'</a><a class="weui-form-preview__btn gray" onclick="cancel()">Cancel</a></div>';
+
+  getAccount();
+
+  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=rewardform;
+  openaction = [ShareID,ReplyID,"reward"];
+}
+
+
+function clickUpdate(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="update")
+    return cancel();
+  cancel();
+  var updateform = '<div class="replyForm"><table width="600px"><tr height="100px"><td align=left valign=top>Content</td><td align=left valign=top><textarea id="Content" rows="5" class="shareInput"></textarea></td></tr><tr height="40px"><td align=left valign=top>Account</td><td align=left valign=top>              <select class="shareInput oneLine" id="Account">'+acc2html([document.getElementById("SenderOf"+ShareID+"-"+ReplyID).title])+'</select>            </td>          </tr>         <tr><td></td><td align=left valign=top><button class="submit" onclick="update('+ShareID+','+ReplyID+')">Update '+ShareID+','+ReplyID+'</button><button class="submit" onclick="cancel()">Cancel</button></td></tr></table></div>';
+
+  document.getElementById('ActionTo'+ShareID+'-'+ReplyID).innerHTML=updateform;
+  openaction = [ShareID,ReplyID,"update"];
+}
+
+var openaction = [];
+function cancel() {
+  if (openaction.length!=0) {
+    document.getElementById('ActionTo'+openaction[0]+'-'+openaction[1]).innerHTML="";
+    openaction = [];
+  }
 }
 
 function acc2html(data) {
-  if (data.length==0) {
-    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
-  }
-  else {
-    var str = '';
-    for (i in data)
-      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
-    return str;
-  }
+	if (data.length==0) {
+	  return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+	}
+	else {
+	  var str = '';
+	  for (i in data)
+	    str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+	  return str;
+	}
 }
+
+var boxes = {};
+function pushBoxes() {
+  if(document.getElementById("Nickname")!=null)
+    boxes["Nickname"] = document.getElementById("Nickname").value;
+  if(document.getElementById("switchCP")!=null)
+    boxes["switchCP"] = document.getElementById("switchCP").checked;
+  if(document.getElementById("Content")!=null)
+    boxes["Content"] = document.getElementById("Content").value;
+  if(document.getElementById("Account")!=null)
+    boxes["Account"] = document.getElementById("Account").value;
+  if(document.getElementById("Value")!=null)
+    boxes["Value"] = document.getElementById("Value").value;
+  boxes["activeElement"] = document.activeElement.id;
+}
+
+function pullBoxes() {
+  if(document.getElementById("Nickname")!=null)
+    document.getElementById("Nickname").value = boxes["Nickname"];
+  if(document.getElementById("switchCP")!=null)
+    document.getElementById("switchCP").checked = boxes["switchCP"];
+  if(document.getElementById("Content")!=null)
+    document.getElementById("Content").value = boxes["Content"];
+  if(document.getElementById("Account")!=null)
+    document.getElementById("Account").value = boxes["Account"];
+  if(document.getElementById("Value")!=null)
+    document.getElementById("Value").value = boxes["Value"];
+  if(document.getElementById(boxes["activeElement"])!=null)
+  	document.getElementById(boxes["activeElement"]).focus();
+}
+
 
 function reply(ShareID){
   var nickname = document.getElementById("Nickname").value;
-  var AllowUpdated = document.getElementById("AllowUpdated").checked;
+  var AllowUpdated = document.getElementById("switchCP").checked;
   var content = document.getElementById("Content").value;
   var account = document.getElementById("Account").value;
   console.log(nickname, AllowUpdated, content, {from:account});
-  EtherShare.ReplyShare.sendTransaction(ShareID, nickname, AllowUpdated, content, {from:account}, function(error,data){
-    if(err) alert(222);
-    else
-      console.log(111);
+  EtherShare.methods.ReplyShare(ShareID, nickname, AllowUpdated, content).send({from:account}, function(error,data){
+    //
+  });
+}
+
+function like(ShareID, ReplyID) {
+  var account = document.getElementById("Account").value;
+  EtherShareLike.methods.like(ShareID,ReplyID).send({from:account}, function(error,data){
+    //
+  });
+}
+
+function reward(ShareID, ReplyID) {
+  var value = document.getElementById("Value").value;
+  var account = document.getElementById("Account").value;
+  var towei = web3.utils.toWei(value, 'ether');
+  console.log(towei);
+  EtherShareReward.methods.Reward(ShareID,ReplyID).send({value:towei,from:account}, function(error,data){
+    //
+  });
+}
+
+function update(ShareID, ReplyID){
+  var content = document.getElementById("Content").value;
+  var account = document.getElementById("Account").value;
+  console.log(ShareID, ReplyID, content, {from:account});
+  EtherShare.methods.Update(ShareID, ReplyID, content).send({from:account}, function(error,data){
+    //
   });
 }
 
@@ -130,48 +267,25 @@ function timestampToTime(timestamp) {
   return Y+M+D+h+m+s;
 }
 
-
-
-
 function Share2html(ShareID, oneQuery) {
-  var str = '<div class="oneShare">';
-  str += '<b title="'+oneQuery.sender+'">'+oneQuery.nickname+'</b><br>';
-  str += oneQuery.content.replace(/\n/g, '<br>')+'<br>';
+  var str = '<div class="weui-panel"><div class="weui-panel__bd" id="ReplyOf'+ShareID+'"><div class="weui-media-box weui-media-box_text"><p><h3 class="weui-media-box__title inline">'+oneQuery.nickname+'</h3></p><p class="weui-media-box__desc dark font16">'+timestampToTime(oneQuery.timestamp)+'<br>'+oneQuery.content.replace(/\n/g, '<br>')+'</p><ul class="weui-media-box__info font16"><li class="weui-media-box__info__meta gray" onclick="clickForward('+ShareID+','+0+')" ><u>Forward</u></li><li class="weui-media-box__info__meta gray" onclick="clickReply('+ShareID+')"><u>Reply</u></li><li class="weui-media-box__info__meta gray" onclick="clickLike('+ShareID+','+0+')"><u>Like: '+oneQuery.like+'</u></li><li class="weui-media-box__info__meta gray" onclick="clickReward('+ShareID+','+0+')"><u>Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</u></li></ul><div id="ActionTo'+ShareID+'-0"></div></div></div></div>';
 
-  str += '<div>';
-  str +=  '<div style="display:inline;" >'+timestampToTime(oneQuery.timestamp)+'</div>';
-  str +=  '<div onclick="clickReward('+ShareID+','+0+')" class="action">Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</div>';
-  str +=  '<div onclick="clickLike('+ShareID+','+0+')" class="action">Like: '+oneQuery.like+'</div>';
-  str +=  '<div onclick="clickReply('+ShareID+')" class="action">Reply</div>';
-  str += '</div>';
-
-  str += '<div id="ActionTo'+ShareID+'-0"></div>';
-  str += '<div id="ReplyOf'+ShareID+'"></div>'+'</div>';
   return str;
 }
-
 function Reply2html(ShareID, ReplyID, oneQuery) {
-  var str = '<div class="oneReply">'; 
-  str += '#'+ReplyID+"&nbsp;"+oneQuery.nickname+'<br>';
-  str += oneQuery.content.replace(/\n/g, '<br>');
-
-  str += '<div>';
-  str += '<div style="display:inline;" >'+timestampToTime(oneQuery.timestamp)+'</div>';
-  str += '<div onclick="clickReward('+ShareID+','+ReplyID+')" class="action">Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</div>';
-  str += '<div onclick="clickLike('+ShareID+','+ReplyID+')" class="action">Like: '+oneQuery.like+'</div>';
-  str += '</div>';
-
-  str += '<div id="ActionTo'+ShareID+'-'+ReplyID+'"></div>';
-
-  str += '</div>'
+  var str = '<div class="weui-media-box weui-media-box_text"><p><h3 class="weui-media-box__title inline">#'+ReplyID+"&nbsp;"+oneQuery.nickname+'</h3></p><p class="weui-media-box__desc dark font16">'+timestampToTime(oneQuery.timestamp)+'<br>'+oneQuery.content.replace(/\n/g, '<br>')+'</p><ul class="weui-media-box__info font16"><li class="weui-media-box__info__meta gray" onclick="clickForward('+ShareID+','+ReplyID+')" ><u>Forward</u></li><li class="weui-media-box__info__meta gray" onclick="clickLike('+ShareID+','+ReplyID+')"><u>Like: '+oneQuery.like+'</u></li><li class="weui-media-box__info__meta gray" onclick="clickReward('+ShareID+','+ReplyID+')"><u>Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</u></li></ul><div id="ActionTo'+ShareID+'-'+ReplyID+'"></div></div>';
+/*
+  if(oneQuery.AllowUpdated && accountBeforeLoading.indexOf(oneQuery.sender)>=0) {
+    str +=  '<div onclick="clickUpdate('+ShareID+','+ReplyID+')" class="action">Update</div>';
+  }*/
   return str;
 }
 
 function readShare(ShareID, ReplyID,  length) {
-  console.log("readingShare",ShareID,ReplyID);
+
   EtherShareQuery.methods.get(ShareID,ReplyID).call(function(error,data){
     if (error) {
-      console.log(error);
+      console.log("no reply, next share");
       //no reply, next share
       if(length>1)
         readShare(ShareID-1, 0, length-1);
@@ -179,20 +293,42 @@ function readShare(ShareID, ReplyID,  length) {
     else {
       var oneQuery = data;
 
-      console.log("readingLike",ShareID,ReplyID);
-      console.log(oneQuery);
+      console.log("reading",ShareID,ReplyID);
 
-      if (ReplyID==0)
-        document.getElementById('container').innerHTML += Share2html(ShareID, oneQuery);
-      else
+      if (ReplyID==0) {
+        pushBoxes();
+        document.getElementById('ShareContainer').innerHTML += Share2html(ShareID, oneQuery);
+        pullBoxes();
+      }
+      else{
+        pushBoxes();
         document.getElementById('ReplyOf'+ShareID).innerHTML += Reply2html(ShareID, ReplyID, oneQuery);
+        pullBoxes();
+      }
+
+      if (toastStatus=="connect") {
+        removeToast();
+      }
 
       readShare(ShareID, ReplyID+1, length);
     }
   });
 }
 
+function getQuery() {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  var res ={};
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+    res[pair[0]] = pair[1];
+  }
+  return res;
+}
+
 function startApp(){
+  getAccountBeforeLoading();
+
   EtherShare = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}],"0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
 
   EtherShareLike = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"}],"name":"like","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allLike","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],"0x43820f75f021c34ce13ded1595633ed39b79ab47");
@@ -201,35 +337,61 @@ function startApp(){
 
   EtherShareQuery = new web3.eth.Contract([{"constant": true,"inputs": [{"internalType": "uint256","name": "ShareID","type": "uint256"},{"internalType": "uint256","name": "ReplyID","type": "uint256"}],"name": "get","outputs": [{"components": [{"internalType": "address","name": "sender","type": "address"},{"internalType": "string","name": "nickname","type": "string"},{"internalType": "uint256","name": "timestamp","type": "uint256"},{"internalType": "bool","name": "AllowUpdated","type": "bool"},{"internalType": "string","name": "content","type": "string"},{"internalType": "uint256","name": "like","type": "uint256"},{"internalType": "uint256","name": "reward","type": "uint256"}],"internalType": "struct EtherShareQuery.oneQuery","name": "","type": "tuple"}],"payable": false,"stateMutability": "view","type": "function"}], "0x71de0d9fea931b42297d94cac5ec915410e1da99");
 
-  console.log("calling count");
-  EtherShare.methods.count().call(function(error,data){
+  var queryShareID = getQuery()["id"];
+  if(queryShareID) {
+    var ShareID = parseInt(queryShareID);
+    readShare(ShareID,0,0);
+  }
+  else {
+    console.log("calling count");
+    EtherShare.methods.count().call(function(error,data){
       cnt = data;
       console.log(cnt);
       readShare(cnt-1,0,cnt);
     });
+  }
 }
 
-window.addEventListener('load', async () => {
+window.addEventListener('load', function() {
+
   // Modern dapp browsers...
   if (window.ethereum) {
     window.web3 = new Web3(ethereum);
-    console.log("Modern");
+    addToast("Connecting", "connect");
     startApp();
   }
   // Legacy dapp browsers...
   else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
-    console.log("Legacy");
-    console.log(window.web3.version);
+    addToast("Connecting", "connect");
     startApp();
   }
   // Non-dapp browsers...
   else {
-  	//alert("No Web3!"); return;
-    alert("No Web3. Using provider from infura.io.");
+    addToast("Using Infura.io", "connect");
     window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/bf14a42f4ce744afb9c2eec7ba215b01"));
     startApp();
   }
-});
+})
+
+function goto(url) {
+    if(url=="./index.html") {
+      if(getQuery()["id"]==null)
+        return;
+    }
+    addToast("Loading", "load");
+    location.href=url;
+}
+
+var toastStatus;
+function addToast(str, status) {
+    document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">'+str+'</p></div>';
+    toastStatus = status;
+}
+
+function removeToast() {
+    document.getElementById('loadingToast').innerHTML = "";
+    toastStatus = "";
+}
 
 </script>

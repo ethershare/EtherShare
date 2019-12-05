@@ -110,6 +110,16 @@
     var url = location.search;
     if(url.indexOf("imtoken")>0)
       location.href="./mobile/";
+
+    var ua = navigator.userAgent;
+    var mobiles = ["MicroMessenger","Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    for (i in mobiles) {
+      if(ua.indexOf(mobiles[i])>=0)
+        location.href="./mobile/";
+    }
+
   </script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
 </head>
@@ -237,6 +247,37 @@ function acc2html(data) {
 	}
 }
 
+var boxes = {};
+function pushBoxes() {
+  if(document.getElementById("Nickname")!=null)
+    boxes["Nickname"] = document.getElementById("Nickname").value;
+  if(document.getElementById("AllowUpdated")!=null)
+    boxes["AllowUpdated"] = document.getElementById("AllowUpdated").checked;
+  if(document.getElementById("Content")!=null)
+    boxes["Content"] = document.getElementById("Content").value;
+  if(document.getElementById("Account")!=null)
+    boxes["Account"] = document.getElementById("Account").value;
+  if(document.getElementById("Value")!=null)
+    boxes["Value"] = document.getElementById("Value").value;
+  boxes["activeElement"] = document.activeElement.id;
+}
+
+function pullBoxes() {
+  if(document.getElementById("Nickname")!=null)
+    document.getElementById("Nickname").value = boxes["Nickname"];
+  if(document.getElementById("AllowUpdated")!=null)
+    document.getElementById("AllowUpdated").checked = boxes["AllowUpdated"];
+  if(document.getElementById("Content")!=null)
+    document.getElementById("Content").value = boxes["Content"];
+  if(document.getElementById("Account")!=null)
+    document.getElementById("Account").value = boxes["Account"];
+  if(document.getElementById("Value")!=null)
+    document.getElementById("Value").value = boxes["Value"];
+  if(document.getElementById(boxes["activeElement"])!=null)
+  	document.getElementById(boxes["activeElement"]).focus();
+}
+
+
 function reply(ShareID){
   var nickname = document.getElementById("Nickname").value;
   var AllowUpdated = document.getElementById("AllowUpdated").checked;
@@ -342,10 +383,16 @@ function readShare(ShareID, ReplyID,  length) {
 
       console.log("reading",ShareID,ReplyID);
 
-      if (ReplyID==0)
+      if (ReplyID==0) {
+        pushBoxes();
         document.getElementById('container').innerHTML += Share2html(ShareID, oneQuery);
-      else
+        pullBoxes();
+      }
+      else{
+        pushBoxes();
         document.getElementById('ReplyOf'+ShareID).innerHTML += Reply2html(ShareID, ReplyID, oneQuery);
+        pullBoxes();
+      }
 
       readShare(ShareID, ReplyID+1, length);
     }

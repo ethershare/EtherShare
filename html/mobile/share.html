@@ -1,0 +1,189 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>EtherShare</title>
+    <link rel="stylesheet" href="./weui.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
+
+
+    <style>
+    .dark {
+      color: #666666;
+    }
+    .blue {
+      color: #0096ff;
+    }
+    .gray {
+      color: #C0C0C0;
+    }
+    .inline{
+      display: inline;
+    }
+    .font13 {
+      font-size:13px;
+    }
+    .font15 {
+      font-size:15px;
+    }
+    .font16 {
+      font-size: 16px;
+      word-wrap: break-word;
+    }
+    .noleftrightpadding {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .weui-form-preview__ft{
+      border-top: 0.5px solid rgba(0,0,0,.1);
+      border-bottom: 0.5px solid rgba(0,0,0,.1);
+    }
+
+    </style>
+</head>
+
+<body style="background-color: rgb(230, 236, 240)">
+
+<div class="container" id="container">
+  <div class="page tabbar js_show">
+      <div class="page__bd" style="height: 100%;">
+          <div class="weui-tab">
+              <div class="weui-tab__panel" id="ShareContainer">
+                <div class="weui-panel">
+                  <div class="weui-panel__bd" id="ReplyOf36">
+                    <div class="weui-media-box weui-media-box_text">
+                      <div class="weui-cells weui-cells_form">
+                        <div class="weui-cell" style="padding-left: 0px; padding-right: 0px;">
+                          <div class="weui-cell__bd">
+                            <input name="tel" class="weui-input" id="Nickname" placeholder="Nickname">
+                          </div>
+                        </div>
+                        <div class="weui-cell" style="padding-left: 0px; padding-right: 0px;">
+                            <div class="weui-cell__bd">
+                                <textarea class="weui-textarea"  id="Content" placeholder="Content" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="weui-cell weui-cell_switch" style="padding-left: 0px; padding-right: 0px;">
+                          <div class="weui-cell__bd gray">Allow yourself to update</div>
+                          <div class="weui-cell__ft">
+                            <label for="switchCP" class="weui-switch-cp">
+                              <input id="switchCP" class="weui-switch-cp__input" type="checkbox">
+                              <div class="weui-switch-cp__box"></div>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="weui-cell weui-cell_select">
+                          <div class="weui-cell__bd">
+                            <select class="weui-select gray font13" id="Account" style="padding-left: 0px; padding-right: 0px;">
+                              <option value="null">No accounts found. Please connect to Ethereum.</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="weui-form-preview__ft">
+                        <a class="weui-form-preview__btn blue" onclick="submit()">Submit</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="weui-tabbar" id="xiamian">
+                  <a href="javascript:;" onclick="goto('./index.html')"  class="weui-tabbar__item">
+                      <i class="weui-icon-search gray"></i>
+                      <p class="weui-tabbar__label font15 gray">Read</p>
+                  </a>
+                  <a href="javascript:;" class="weui-tabbar__item weui-bar__item_on">
+                      <i class="weui-icon-info"></i>
+                      <p class="weui-tabbar__label font15 blue">Share</p>
+                  </a>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<div id="loadingToast"></div>
+
+</body>
+</html>
+
+<script>
+var EtherShare;
+
+function goto(url) {
+    document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">Loading</p></div>';
+    location.href=url;
+}
+
+
+function submit(){
+  var nickname = document.getElementById("Nickname").value;
+  var AllowUpdated = document.getElementById("switchCP").checked;
+  var content = document.getElementById("Content").value;
+  var account = document.getElementById("Account").value;
+  console.log(nickname, AllowUpdated, content, {from:account});
+  EtherShare.methods.NewShare(nickname, AllowUpdated, content).send({from:account}, function(error,data){
+    if(err) alert(222);
+    else
+      console.log(111);
+  });
+}
+
+function acc2html(data) {
+  if (data.length==0) {
+    return '<option value=null>No accounts found. Please connect to MetaMask or Mist.</option>'
+  }
+  else {
+    var str = '';
+    for (i in data)
+      str += '<option value ="'+data[i]+'">'+data[i]+'</option>';
+    return str;
+  }
+}
+
+function getAccount() {
+  if (window.ethereum) {
+    ethereum.enable()
+    .then(function (accounts) {
+      document.getElementById('Account').innerHTML = acc2html(accounts);
+    })
+    .catch(function (reason) {
+      console.log(reason);
+      alert("without permission to send transaction to Ethereum");
+    })
+  }
+  else {
+    web3.eth.getAccounts(function (err, data){
+      document.getElementById('Account').innerHTML = acc2html(data);
+    });    
+  }
+}
+
+
+function startApp(){
+  EtherShare = new web3.eth.Contract([{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"ReplyID","type":"uint256"},{"name":"content","type":"string"}],"name":"Update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ShareID","type":"uint256"},{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"ReplyShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"allShare","outputs":[{"name":"sender","type":"address"},{"name":"nickname","type":"string"},{"name":"timestamp","type":"uint256"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"link","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nickname","type":"string"},{"name":"AllowUpdated","type":"bool"},{"name":"content","type":"string"}],"name":"NewShare","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ShareID","type":"uint256"},{"indexed":false,"name":"ReplyID","type":"uint256"}],"name":"EVENT","type":"event"}],"0xc86bdf9661c62646194ef29b1b8f5fe226e8c97e");
+  getAccount();
+}
+
+
+window.addEventListener('load', function() {
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    console.log("Modern");
+    startApp();
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    console.log("Legacy");
+    startApp();
+  }
+  // Non-dapp browsers...
+  else {
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
+})
+
+
+</script>

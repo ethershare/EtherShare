@@ -1,6 +1,6 @@
 # EtherShare
 
-EtherShare is a project to share information with permanent storage and open access on Ethereum.
+[EtherShare](http://ethershare.org) is a project to share information with permanent storage and open access on Ethereum.
 
 > The website is not the only one entry to EtherShare. EtherShare is a DApp. So you can download the html files to your own server or access the contract in other ways.
 
@@ -49,6 +49,6 @@ EtherShareReward | 0x28daa51dc3d80a951af9c451d174f0c7156c6876 | [Etherscan](http
 EtherShareLike | 0x43820f75f021c34ce13ded1595633ed39b79ab47 | [Etherscan](https://etherscan.io/address/0x43820f75f021c34ce13ded1595633ed39b79ab47) |
 EtherShareQuery | 0x71de0d9fea931b42297d94cac5ec915410e1da99 | [Etherscan](https://etherscan.io/address/0x71de0d9fea931b42297d94cac5ec915410e1da99) |
 
-You can review all the source code on https://github.com/ethershare/ethershare.
+You can also review all the source code on `EtherShare/contract/`.
 
 Thanks...

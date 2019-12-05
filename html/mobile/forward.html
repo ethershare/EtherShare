@@ -1,0 +1,231 @@
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>EtherShare</title>
+    <link rel="stylesheet" href="./weui.min.css">
+    <script type="text/javascript" src="qrcode.min.js"></script>
+    <script type="text/javascript" src="html2canvas.min.js"></script>
+    <script type="text/javascript" src="canvas2image.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.0/dist/web3.min.js"></script>
+
+
+    <style>
+    .dark {
+      color: #666666;
+    }
+    .blue {
+      color: #0096ff;
+    }
+    .gray {
+      color: #C0C0C0;
+    }
+    .inline{
+      display: inline;
+    }
+    .font13 {
+      font-size:13px;
+    }
+    .font15 {
+      font-size:15px;
+    }
+    .font16 {
+      font-size: 16px;
+      word-wrap: break-word;
+    }
+    .noleftrightpadding {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .weui-form-preview__ft{
+      border-top: 0.5px solid rgba(0,0,0,.1);
+      border-bottom: 0.5px solid rgba(0,0,0,.1);
+    }
+
+    </style>
+</head>
+
+<body style="background-color: #ffffff">
+
+<div class="container" id="container" style="display: none">
+  <div class="page tabbar js_show">
+      <div class="page__bd" style="height: 100%;">
+          <div class="weui-tab">
+              <div class="weui-tab__panel" id="ShareContainer">
+                <div id="poster">
+                </div>
+                <div id="tips" style="margin-top: 20px;margin-bottom: 20px; display: none; color: #666666">
+                  <center>Tip: Please save the image to forward.</center>
+                </div>
+              </div>
+
+
+              <div class="weui-tabbar" id="xiamian">
+                  <a href="javascript:;" onclick="goto('./index.html')"  class="weui-tabbar__item  weui-bar__item_on">
+                      <i class="weui-icon-search gray"></i>
+                      <p class="weui-tabbar__label font15" style="color: #C0C0C0">Read</p>
+                  </a>
+                  <a href="javascript:;" onclick="goto('./share.html')"   class="weui-tabbar__item">
+                      <i class="weui-icon-info gray"></i>
+                      <p class="weui-tabbar__label font15 gray">Share</p>
+                  </a>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<div id="posterContainer" style="width: 595px">
+  <div><img src="header.png"/></div>
+  <div id="nickname" style="margin-top: 50px; padding-left: 40px; font-size: 24px; font-weight: 666">Loading...</div>
+  <p id="content" style="margin-top: 5px; padding-left: 40px; padding-right: 40px; font-size: 18px;">
+
+  </p>
+
+  <p id="content" style="margin-top: 50px; padding-left: 40px; padding-right: 40px; font-size: 16px; color: #666666">
+Permanently Stored on Ethereum at <font id="time"></font><br>
+Sender: <font id="sender"></font><br>
+Timestamp: <font id="timestamp"></font><br>
+Like: <font id="like"></font><br>
+Reward: <font id="reward"></font> ETH<br>
+  </p>
+  <center><div  style="margin-top: 50px;margin-bottom: 50px;">
+    <div id="qrcode"></div>
+    <p style="margin-top=5px; font-size: 18px; color: #888888">See Details</p>
+  </div></center>
+  <div style="margin-bottom: 0px;"><img src="footer.png"/></div>
+</div>
+<div id="loadingToast"></div>
+
+</body>
+</html>
+
+<script>
+
+var EtherShareQuery;
+
+function add0(num) {
+  return num< 10 ? '0'+num : num;
+} 
+
+function timestampToTime(timestamp) {
+  var date = new Date(timestamp * 1000);
+  Y = date.getFullYear() + '-';
+  M = add0(date.getMonth()+1) + '-';
+  D = add0(date.getDate()) + ' ';
+  h = add0(date.getHours()) + ':';
+  m = add0(date.getMinutes()) + ':';
+  s = add0(date.getSeconds());
+  return Y+M+D+h+m+s;
+}
+
+function query2html(ShareID, ReplyID, oneQuery) {
+  document.getElementById("nickname").innerHTML = oneQuery.nickname;
+  document.getElementById("content").innerHTML = oneQuery.content.replace(/\n/g, '<br>');
+  document.getElementById("time").innerHTML = timestampToTime(oneQuery.timestamp);
+  document.getElementById("sender").innerHTML = oneQuery.sender;
+  document.getElementById("like").innerHTML = oneQuery.like;
+  document.getElementById("reward").innerHTML = web3.utils.fromWei(oneQuery.reward,"ether");
+  document.getElementById("timestamp").innerHTML = oneQuery.timestamp;
+  return;
+}
+
+function readShare(ShareID, ReplyID,  length) {
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://ethershare.org/mobile/?id="+ShareID,
+    width: 128,
+    height: 128,
+  });
+
+
+  EtherShareQuery.methods.get(ShareID,ReplyID).call(function(error,data){
+    if (error) {
+      alert("network error");
+      console.log("error", error);
+    }
+    else {
+      var oneQuery = data;
+      
+      query2html(ShareID, ReplyID, oneQuery);
+
+      addToast("Snapshoting", "snapshot");
+
+      html2canvas(document.getElementById("posterContainer")).then(canvas => {
+          document.getElementById("poster").appendChild(Canvas2Image.convertToImage(canvas, null, null, "jpeg"));
+          document.getElementById("posterContainer").innerHTML = "";
+          document.getElementsByTagName("img")[0].style.width="100%";
+          document.getElementById("tips").style.display ="block";
+          document.getElementById("container").style.display ="block";
+      });
+
+      return removeToast();
+      
+    }
+  });
+}
+
+function getQuery() {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  var res ={};
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+    res[pair[0]] = pair[1];
+  }
+  return res;
+}
+
+function startApp(){
+
+  EtherShareQuery = new web3.eth.Contract([{"constant": true,"inputs": [{"internalType": "uint256","name": "ShareID","type": "uint256"},{"internalType": "uint256","name": "ReplyID","type": "uint256"}],"name": "get","outputs": [{"components": [{"internalType": "address","name": "sender","type": "address"},{"internalType": "string","name": "nickname","type": "string"},{"internalType": "uint256","name": "timestamp","type": "uint256"},{"internalType": "bool","name": "AllowUpdated","type": "bool"},{"internalType": "string","name": "content","type": "string"},{"internalType": "uint256","name": "like","type": "uint256"},{"internalType": "uint256","name": "reward","type": "uint256"}],"internalType": "struct EtherShareQuery.oneQuery","name": "","type": "tuple"}],"payable": false,"stateMutability": "view","type": "function"}], "0x71de0d9fea931b42297d94cac5ec915410e1da99");
+
+  var queryShareID = getQuery()["s"];
+  var queryReplyID = getQuery()["r"];
+
+  var ShareID = parseInt(queryShareID);
+  var ReplyID = parseInt(queryReplyID);
+
+  readShare(ShareID,ReplyID,0);
+}
+
+window.addEventListener('load', function() {
+
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    addToast("Connecting", "connect");
+    startApp();
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    addToast("Connecting", "connect");
+    startApp();
+  }
+  // Non-dapp browsers...
+  else {
+    addToast("Using Infura.io", "connect");
+    window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/bf14a42f4ce744afb9c2eec7ba215b01"));
+    startApp();
+  }
+})
+
+function goto(url) {
+    addToast("Loading", "load");
+    location.href=url;
+}
+
+var toastStatus;
+function addToast(str, status) {
+    document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">'+str+'</p></div>';
+    toastStatus = status;
+}
+
+function removeToast() {
+    document.getElementById('loadingToast').innerHTML = "";
+    toastStatus = "";
+}
+
+</script>
